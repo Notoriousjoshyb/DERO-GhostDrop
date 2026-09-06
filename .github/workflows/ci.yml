@@ -1,0 +1,81 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+env:
+  GHOSTDROP_BIG: "0"
+
+jobs:
+  build-test:
+    name: build+test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+      - name: Setup
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            powershell -NoProfile -File scripts/setup.ps1
+          else
+            bash scripts/setup.sh
+          fi
+      - name: Build
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            powershell -NoProfile -File scripts/build.ps1
+          else
+            bash scripts/build.sh
+          fi
+      - name: Unit + owned integration/acceptance
+        shell: bash
+        run: |
+          go vet ./tests/
+          go test ./tests/ -run 'Integration|Acceptance' -count=1
+      - name: CLI smoke
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            ./bin/ghostdrop-cli.exe doctor || true
+            ./bin/ghostdrop-cli.exe status || true
+            ./bin/ghostdrop-relay.exe --help || ./bin/ghostdrop-relay.exe status || true
+          else
+            ./bin/ghostdrop-cli doctor || true
+            ./bin/ghostdrop-cli status || true
+            ./bin/ghostdrop-relay status || true
+          fi
+
+  # Best-effort distro coverage: build via distro images. Informational only.
+  distro:
+    name: distro smoke (${{ matrix.image }})
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["fedora:latest", "archlinux:latest"]
+    container:
+      image: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Go (best effort)
+        shell: bash
+        run: |
+          if command -v dnf >/dev/null; then dnf install -y golang git || true
+          elif command -v pacman >/dev/null; then pacman -Sy --noconfirm go git || true
+          fi
+          go version || echo "Go unavailable in ${{ matrix.image }} — best-effort only"
+      - name: Build (best effort)
+        shell: bash
+        run: |
+          go build ./... || echo "distro build best-effort — see main matrix for gating signal"

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Ghostdrop
+Comment=Privacy-first file transfer
+Exec=ghostdrop --open-url %u
+Icon=ghostdrop
+Terminal=false
+Type=Application
+Categories=Utility;FileTransfer;
+MimeType=x-scheme-handler/ghostdrop;

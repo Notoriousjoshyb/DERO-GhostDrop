@@ -1,0 +1,25 @@
+# Binaries
+ghostdrop
+ghostdrop.exe
+ghostdrop-cli
+ghostdrop-cli.exe
+ghostdrop-relay
+ghostdrop-relay.exe
+dist/
+bin/
+
+# Local Ghostdrop state (never commit live drops or keys)
+/.smoke/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Test / coverage artifacts
+*.test
+*.out
+coverage.txt

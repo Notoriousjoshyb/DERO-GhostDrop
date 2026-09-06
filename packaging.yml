@@ -1,0 +1,51 @@
+# Ghostdrop V1 packaging matrix. scripts/package.{sh,ps1} produce the archives;
+# native formats below are built from the same bin/ output.
+
+version: "1.0.0" # override with GHOSTDROP_VERSION=...
+
+artifacts:
+  - { os: windows, arch: amd64, file: "dist/ghostdrop-1.0.0-win64.zip", from: "bin/*.exe" }
+  - { os: linux, arch: amd64, file: "dist/ghostdrop-1.0.0-linux-x86_64.tar.gz", from: "bin/*" }
+  - { os: linux, arch: arm64, file: "dist/ghostdrop-1.0.0-linux-arm64.tar.gz", from: "bin/*" }
+  - { os: macos, arch: universal, file: "dist/ghostdrop-1.0.0-macos.tar.gz", from: "bin/*" }
+
+deb: # Debian/Ubuntu — dpkg-deb --build pkg/deb ghostdrop_1.0.0_amd64.deb
+  control: |
+    Package: ghostdrop
+    Version: 1.0.0
+    Section: utils
+    Priority: optional
+    Architecture: amd64
+    Maintainer: Ghostdrop
+    Description: Privacy-first file transfer (relay + CLI + desktop)
+  layout:
+    - "DEBIAN/control  (from control above)"
+    - "usr/bin/ghostdrop ghostdrop-cli ghostdrop-relay  (from bin/)"
+    - "usr/share/doc/ghostdrop/README.md docs/THREAT_MODEL.md docs/PRIVACY.md"
+
+rpm: # Fedora/RHEL — rpmbuild -bb packaging/ghostdrop.spec
+  spec_outline:
+    - "Name: ghostdrop / Version: 1.0.0 / BuildArch: x86_64"
+    - "%install: install -m0755 bin/* %{buildroot}%{_bindir}/"
+    - "%files: %{_bindir}/ghostdrop* %doc README.md docs/*"
+
+arch_pkgbuild: # Arch — makepkg (PKGBUILD outline)
+  outline:
+    - 'pkgname=ghostdrop pkgver=1.0.0 arch=(x86_64)'
+    - "build() { bash scripts/build.sh; }"
+    - 'package() { install -Dm0755 bin/* -t "$pkgdir/usr/bin/"; }'
+
+appimage: # AppImage — linuxdeploy
+  outline:
+    - "AppDir/usr/bin/ghostdrop*  (from bin/)"
+    - "AppDir/ghostdrop.desktop + AppDir/logo.png (assets/logo.png)"
+    - "linuxdeploy --appdir AppDir --output appimage"
+
+dmg: # macOS disk image
+  outline:
+    - "create-dmg --volname Ghostdrop --window-size 600 400 dist/Ghostdrop-1.0.0.dmg bin/"
+
+windows_installer: # Inno Setup outline
+  outline:
+    - 'Source: "bin\\*.exe"; DestDir: "{app}"'
+    - 'Icons: {group}\\Ghostdrop → {app}\\ghostdrop.exe'

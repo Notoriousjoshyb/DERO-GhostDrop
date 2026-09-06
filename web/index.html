@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GHOSTDROP — Private File Transfer</title>
+<link rel="icon" type="image/png" href="/static/logo.png">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="demo-banner" class="banner demo hidden">SIMULATED — demo mode, isolated state, nothing leaves this machine</div>
+<div id="ghost-banner" class="banner ghost hidden">GHOST SESSION — nothing persists on disk</div>
+
+<header class="top">
+  <img src="/assets/logo.png" alt="Ghostdrop logo" class="logo" onerror="this.style.display='none'">
+  <div class="title">
+    <h1>GHOSTDROP</h1>
+    <p class="sub">Privacy-first file transfer · this machine only</p>
+  </div>
+  <div class="top-actions">
+    <button id="ghost-toggle" class="btn ghost-btn" title="Toggle ghost session">GHOST: OFF</button>
+    <button id="onboard-open" class="btn">WALKTHROUGH</button>
+  </div>
+</header>
+
+<main>
+  <section id="onboarding" class="card glow hidden">
+    <h2>First run — 3 steps</h2>
+    <ol>
+      <li><b>1 · Create</b> a QUICK DROP below, pick a file, press CREATE DROP.</li>
+      <li><b>2 · Share</b> the link or QR from the DROP CREATED panel.</li>
+      <li><b>3 · Track</b> progress and incoming drops; accept only SIGNED ✓ ones.</li>
+    </ol>
+    <button id="onboard-done" class="btn primary">GOT IT</button>
+  </section>
+
+  <section class="card glow">
+    <h2>DROP FILE HERE</h2>
+    <div id="dropzone" class="dropzone" tabindex="0">
+      <p>Drag &amp; drop a file, or <label class="linklike">browse<input id="file-input" type="file" hidden></label></p>
+      <p id="file-name" class="muted">No file selected</p>
+      <div class="progress hidden" id="upload-progress"><div id="upload-bar"></div></div>
+    </div>
+    <form id="quickdrop" class="grid">
+      <label>Recipient
+        <input id="f-recipient" name="recipient" placeholder="dero1q… or name.dero (optional)" autocomplete="off">
+      </label>
+      <label>Expiry (hours)
+        <input id="f-expiry" name="expire_hours" type="number" min="1" max="720" value="24">
+      </label>
+      <label>Mode
+        <select id="f-mode" name="mode">
+          <option value="standard">standard</option>
+          <option value="signed">signed</option>
+          <option value="anonymous">anonymous</option>
+        </select>
+      </label>
+      <button type="submit" class="btn primary" id="create-btn">CREATE DROP</button>
+    </form>
+  </section>
+
+  <section id="created" class="card glow hidden">
+    <h2>DROP CREATED</h2>
+    <p class="mono" id="created-id"></p>
+    <p class="mono small" id="created-note"></p>
+    <div class="row">
+      <button id="copy-link" class="btn">COPY LINK</button>
+      <button id="copy-token" class="btn">COPY TOKEN</button>
+      <button id="show-qr" class="btn">SHOW QR</button>
+      <button id="open-details" class="btn">OPEN DETAILS</button>
+    </div>
+    <img id="qr-img" class="qr hidden" alt="Drop QR code">
+    <pre id="details" class="details hidden"></pre>
+  </section>
+
+  <section class="card">
+    <h2>INCOMING</h2>
+    <div id="incoming" class="list"><p class="muted">No incoming drops.</p></div>
+  </section>
+
+  <section class="cols">
+    <div class="card"><h2>RECENT · OUTGOING</h2><div id="list-outgoing" class="list"></div></div>
+    <div class="card"><h2>VERIFIED</h2><div id="list-verified" class="list"></div></div>
+    <div class="card"><h2>EXPIRED</h2><div id="list-expired" class="list"></div></div>
+  </section>
+</main>
+
+<footer class="muted">Ghostdrop desktop · localhost only · <span id="ver"></span></footer>
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -7,7 +7,7 @@ $Version = if ($env:GHOSTDROP_VERSION) { $env:GHOSTDROP_VERSION } else { '1.0.0'
 New-Item -ItemType Directory -Force -Path dist | Out-Null
 
 if (-not (Test-Path bin) -or @(Get-ChildItem bin -ErrorAction SilentlyContinue).Count -eq 0) {
-  Write-Host 'bin/ is empty — building first.'
+  Write-Host 'bin/ is empty -- building first.'
   powershell -NoProfile -File scripts/build.ps1
 }
 

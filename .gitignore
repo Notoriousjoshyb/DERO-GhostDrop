@@ -1,10 +1,10 @@
-# Binaries
-ghostdrop
-ghostdrop.exe
-ghostdrop-cli
-ghostdrop-cli.exe
-ghostdrop-relay
-ghostdrop-relay.exe
+# Binaries (root-level only; MUST keep leading / so cmd/ghostdrop*/ stays tracked)
+/ghostdrop
+/ghostdrop.exe
+/ghostdrop-cli
+/ghostdrop-cli.exe
+/ghostdrop-relay
+/ghostdrop-relay.exe
 dist/
 bin/
 

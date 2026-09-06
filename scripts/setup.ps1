@@ -27,7 +27,7 @@ if ($verOut -match 'go(\d+\.\d+(?:\.\d+)?)') {
 }
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-  Write-Host "WARNING: 'git' missing — winget install Git.Git"
+  Write-Host "WARNING: 'git' missing -- winget install Git.Git"
 }
 
 Write-Host '==> go mod download'
